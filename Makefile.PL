@@ -27,7 +27,7 @@ my %WriteMakefileArgs = (
     "Net::AMQP" => "0.04",
     "Try::Tiny" => "0.11"
   },
-  "VERSION" => "0.01",
+  "VERSION" => "0.02",
   "test" => {
     "TESTS" => "t/*.t"
   }

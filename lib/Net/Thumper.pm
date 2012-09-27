@@ -1,6 +1,6 @@
 package Net::Thumper;
 {
-  $Net::Thumper::VERSION = '0.01';
+  $Net::Thumper::VERSION = '0.02';
 }
 
 =head1 NAME
@@ -70,15 +70,15 @@ $SIG{PIPE} = "IGNORE";
 #  (Only needs to be done once)
 my $spec_loaded = 0;
 
-my $PORT = 5672;
-
 =head1 CONSTRUCTOR
 
-=head2 new(debug => $bool, server => $host, amqp_definition => $path_to_amqp_xml, debug_hook => \&_debug_hook)
+=head2 new(debug => $bool, server => $host, port => $port, amqp_definition => $path_to_amqp_xml, debug_hook => \&_debug_hook)
 
 Creates a new Net::Thumper instance. Parameters are:
 
 * server (required) - the server to connect to
+
+* port - server port, defaults to 5672
 
 * amqp_definition (required) - path to the AMQP XML definition (as available from the amqp.org website)
 
@@ -110,6 +110,12 @@ has 'server' => (
     isa => 'Str',
 );
 
+has 'port' => (
+    is => 'ro',
+    isa => 'Int',
+    default => 5672
+);
+
 has 'amqp_definition' => (
     is => 'ro',
     isa => 'Str',
@@ -136,7 +142,7 @@ sub _build_socket {
     {
         $socket = IO::Socket::INET->new(
             PeerAddr => $self->server,
-            PeerPort => $PORT,
+            PeerPort => $self->port,
             Proto    => 'tcp',
             Timeout  => 1,
         );
@@ -410,9 +416,7 @@ sub publish {
         header_frame => Net::AMQP::Protocol::Basic::ContentHeader->new(
             content_type     => 'application/octet-stream',
             content_encoding => undef,
-            headers          => {
-                %$props,               
-            },
+            headers          => {},
             delivery_mode    => 1,
             priority         => 1,
             correlation_id   => undef,
@@ -420,9 +424,10 @@ sub publish {
             message_id       => undef,
             timestamp        => time,
             type             => undef,
-            user_id          => 'guest',
+            user_id          => undef,
             app_id           => undef,
             cluster_id       => undef,
+            %$props
         ),
     );
    
@@ -882,7 +887,21 @@ sub _debug {
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
-=head1 AUTHOR AND LICENCE
+=head1 THE FUTURE
+
+When I get a chance, I'd like to tidy up the API, improve the tests and
+split some of the logic into different modules. Could also look at a lighter
+weight alternative to Moose.
+
+Patches are - of course - welcome.
+
+=head1 AUTHORS
+
+Created by Sam Crawley
+
+Contributions by DanC (dconlon)
+
+=head1 LICENCE
 
 Development commissioned by NZ Registry Services, and carried out by
 Catalyst IT - L<http://www.catalyst.net.nz/>
