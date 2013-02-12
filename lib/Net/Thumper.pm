@@ -1,6 +1,6 @@
 package Net::Thumper;
 {
-  $Net::Thumper::VERSION = '0.02';
+  $Net::Thumper::VERSION = '0.03';
 }
 
 =head1 NAME
@@ -254,8 +254,6 @@ sub connect {
 =head2 open_channel()
 
 Open a channel. This is hard-coded to channel 1.
-
-(Could really be part of connect(), since we always call  
 
 =cut
 
